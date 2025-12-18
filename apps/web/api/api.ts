@@ -201,6 +201,443 @@ const getAllUsers = async (token: string): Promise<{ users: unknown[] }> => {
   return response.json();
 };
 
+// ============================================
+// PET API
+// ============================================
+
+interface Pet {
+  _id: string;
+  ownerId: string | { _id: string; email: string };
+  name: string;
+  species: string;
+  breed?: string;
+  gender?: "male" | "female" | "unknown";
+  dateOfBirth?: string;
+  approximateAge?: string;
+  weight?: number;
+  color?: string;
+  medicalNotes?: string;
+  allergies?: string[];
+  vaccinations?: string[];
+  status: "active" | "archived";
+  profileImage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PetInput {
+  name: string;
+  species: string;
+  breed?: string;
+  gender?: "male" | "female" | "unknown";
+  dateOfBirth?: string;
+  approximateAge?: string;
+  weight?: number;
+  color?: string;
+  medicalNotes?: string;
+  allergies?: string[];
+  vaccinations?: string[];
+  profileImage?: string;
+}
+
+interface PaginatedResponse<T> {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  [key: string]: T[] | PaginatedResponse<T>["pagination"];
+}
+
+const getMyPets = async (
+  token: string,
+  includeArchived = false
+): Promise<{ pets: Pet[] }> => {
+  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/pets`);
+  if (includeArchived) url.searchParams.set("includeArchived", "true");
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch pets");
+  }
+
+  return response.json();
+};
+
+const getPetById = async (token: string, petId: string): Promise<{ pet: Pet }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch pet");
+  }
+
+  return response.json();
+};
+
+const addPet = async (
+  token: string,
+  pet: PetInput
+): Promise<{ message: string; pet: Pet }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(pet),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to add pet");
+  }
+
+  return response.json();
+};
+
+const updatePet = async (
+  token: string,
+  petId: string,
+  updates: Partial<PetInput>
+): Promise<{ message: string; pet: Pet }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to update pet");
+  }
+
+  return response.json();
+};
+
+const removePet = async (
+  token: string,
+  petId: string
+): Promise<{ message: string; pet: Pet }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to remove pet");
+  }
+
+  return response.json();
+};
+
+const restorePet = async (
+  token: string,
+  petId: string
+): Promise<{ message: string; pet: Pet }> => {
+  const response = await fetch(
+    `${NEXT_PUBLIC_API_URL}/api/pets/${petId}/restore`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to restore pet");
+  }
+
+  return response.json();
+};
+
+interface SearchPetsParams {
+  name?: string;
+  species?: string;
+  breed?: string;
+  ownerId?: string;
+  status?: "active" | "archived";
+  page?: number;
+  limit?: number;
+}
+
+const searchPets = async (
+  token: string,
+  params: SearchPetsParams = {}
+): Promise<{ pets: Pet[]; pagination: PaginatedResponse<Pet>["pagination"] }> => {
+  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/pets/search`);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) url.searchParams.set(key, String(value));
+  });
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to search pets");
+  }
+
+  return response.json();
+};
+
+// ============================================
+// VET API
+// ============================================
+
+interface VetProfile {
+  _id: string;
+  userId?: string;
+  displayName?: string;
+  specializations?: string[];
+  degrees?: string[];
+  certifications?: string[];
+  yearsOfExperience?: number;
+  languagesSpoken?: string[];
+  clinicName?: string;
+  clinicAddress?: string;
+  clinicCity?: string;
+  clinicState?: string;
+  clinicCountry?: string;
+  clinicPostalCode?: string;
+  clinicPhone?: string;
+  clinicEmail?: string;
+  clinicWebsite?: string;
+  consultationFee?: number;
+  currency?: string;
+  availableForOnlineConsultation?: boolean;
+  bio?: string;
+  profileImage?: string;
+  verified?: boolean;
+  email?: string;
+  licenseNumber?: string;
+  licenseCountry?: string;
+}
+
+interface VetProfileInput {
+  displayName?: string;
+  specializations?: string[];
+  degrees?: string[];
+  certifications?: string[];
+  yearsOfExperience?: number;
+  languagesSpoken?: string[];
+  clinicName?: string;
+  clinicAddress?: string;
+  clinicCity?: string;
+  clinicState?: string;
+  clinicCountry?: string;
+  clinicPostalCode?: string;
+  clinicPhone?: string;
+  clinicEmail?: string;
+  clinicWebsite?: string;
+  consultationFee?: number;
+  currency?: string;
+  availableForOnlineConsultation?: boolean;
+  bio?: string;
+  profileImage?: string;
+}
+
+const getMyVetProfile = async (
+  token: string
+): Promise<{ profile: VetProfile }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vet/profile`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch vet profile");
+  }
+
+  return response.json();
+};
+
+const updateVetProfile = async (
+  token: string,
+  updates: VetProfileInput
+): Promise<{ message: string; profile: VetProfile }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vet/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to update profile");
+  }
+
+  return response.json();
+};
+
+const getVetPublicProfile = async (
+  token: string,
+  vetId: string
+): Promise<{ profile: VetProfile }> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vets/${vetId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch vet profile");
+  }
+
+  return response.json();
+};
+
+interface SearchVetsParams {
+  name?: string;
+  specialization?: string | string[];
+  country?: string;
+  city?: string;
+  language?: string;
+  onlineConsultation?: boolean;
+  verified?: boolean;
+  page?: number;
+  limit?: number;
+}
+
+const searchVets = async (
+  token: string,
+  params: SearchVetsParams = {}
+): Promise<{ vets: VetProfile[]; pagination: PaginatedResponse<VetProfile>["pagination"] }> => {
+  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/vets/search`);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => url.searchParams.append(key, v));
+      } else {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  });
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to search vets");
+  }
+
+  return response.json();
+};
+
+interface Specialization {
+  key: string;
+  value: string;
+  label: string;
+}
+
+const getSpecializations = async (): Promise<{ specializations: Specialization[] }> => {
+  const response = await fetch(
+    `${NEXT_PUBLIC_API_URL}/api/vets/specializations`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch specializations");
+  }
+
+  return response.json();
+};
+
+// Admin vet functions
+const getAllVetProfiles = async (
+  token: string,
+  params: { status?: string; verified?: boolean; page?: number; limit?: number } = {}
+): Promise<{ vets: VetProfile[]; pagination: PaginatedResponse<VetProfile>["pagination"] }> => {
+  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/admin/vets`);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) url.searchParams.set(key, String(value));
+  });
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch vet profiles");
+  }
+
+  return response.json();
+};
+
+const verifyVet = async (
+  token: string,
+  vetId: string,
+  verificationSource?: string
+): Promise<{ message: string; profile: VetProfile }> => {
+  const response = await fetch(
+    `${NEXT_PUBLIC_API_URL}/api/admin/vets/${vetId}/verify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ verificationSource }),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to verify vet");
+  }
+
+  return response.json();
+};
+
 export {
   getUser,
   register,
@@ -209,4 +646,33 @@ export {
   approveRoleRequest,
   rejectRoleRequest,
   getAllUsers,
+  // Pet exports
+  getMyPets,
+  getPetById,
+  addPet,
+  updatePet,
+  removePet,
+  restorePet,
+  searchPets,
+  // Vet exports
+  getMyVetProfile,
+  updateVetProfile,
+  getVetPublicProfile,
+  searchVets,
+  getSpecializations,
+  getAllVetProfiles,
+  verifyVet,
+};
+
+// Type exports
+export type {
+  Pet,
+  PetInput,
+  VetProfile,
+  VetProfileInput,
+  SearchPetsParams,
+  SearchVetsParams,
+  Specialization,
+  UserResponse,
+  PendingRequest,
 };

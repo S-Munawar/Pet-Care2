@@ -59,20 +59,49 @@ const approveRoleRequest = async (
 
     // Create vet profile if approving vet role
     if (roleRequest.requestedRole === ROLES.VET) {
+      console.log("Creating vet profile for user:", targetUser._id);
+      console.log("Role request reason:", roleRequest.reason);
+      
       const licenseMatch = roleRequest.reason?.match(/License: (.+), Country: (.+)/);
       if (licenseMatch) {
-        await VetProfile.findOneAndUpdate(
-          { userId: targetUser._id },
-          {
-            userId: targetUser._id,
-            licenseNumber: licenseMatch[1],
-            licenseCountry: licenseMatch[2],
-            verified: true,
-            verifiedAt: new Date(),
-            verificationSource: "admin_approval",
-          },
-          { upsert: true, new: true }
-        );
+        console.log("License info found:", { license: licenseMatch[1], country: licenseMatch[2] });
+        
+        try {
+          const vetProfile = await VetProfile.findOneAndUpdate(
+            { userId: targetUser._id },
+            {
+              userId: targetUser._id,
+              licenseNumber: licenseMatch[1]?.trim(),
+              licenseCountry: licenseMatch[2]?.trim(),
+              verified: true,
+              verifiedAt: new Date(),
+              verificationSource: "admin_approval",
+            },
+            { upsert: true, new: true }
+          );
+          console.log("Vet profile created/updated:", vetProfile._id);
+        } catch (vetProfileError) {
+          console.error("Failed to create vet profile:", vetProfileError);
+          // Don't fail the entire approval process if vet profile creation fails
+        }
+      } else {
+        console.log("No license info found in reason field, creating basic vet profile");
+        try {
+          const vetProfile = await VetProfile.findOneAndUpdate(
+            { userId: targetUser._id },
+            {
+              userId: targetUser._id,
+              licenseNumber: "PENDING_VERIFICATION",
+              licenseCountry: "UNKNOWN",
+              verified: false,
+              verificationSource: "admin_approval_pending_license",
+            },
+            { upsert: true, new: true }
+          );
+          console.log("Basic vet profile created:", vetProfile._id);
+        } catch (vetProfileError) {
+          console.error("Failed to create basic vet profile:", vetProfileError);
+        }
       }
     }
 

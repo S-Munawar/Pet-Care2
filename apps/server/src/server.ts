@@ -6,6 +6,8 @@ import express from "express";
 import cors from "cors";
 import connectDB from "./config/db";
 import userRouter from "./routes/user";
+import petRouter from "./routes/pet";
+import vetRouter from "./routes/vet";
 
 const app = express();
 const PORT = process.env.PORT || 2000;
@@ -28,7 +30,10 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Routes
 app.use("/api", userRouter);
+app.use("/api", petRouter);
+app.use("/api", vetRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!`);

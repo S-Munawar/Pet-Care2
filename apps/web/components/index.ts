@@ -6,3 +6,6 @@ export { default as CompleteRegistration } from "./CompleteRegistraion";
 export { default as ProtectedRoute } from "./ProtectedRoute";
 export { default as NavBar } from "./NavBar";
 export { default as Footer } from "./Footer";
+export { default as PetManagement } from "./PetManagement";
+export { default as VetSearch } from "./VetSearch";
+export { default as VetProfileEditor } from "./VetProfileEditor";

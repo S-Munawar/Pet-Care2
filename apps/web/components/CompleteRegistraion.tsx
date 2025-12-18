@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { register } from "@/api/api";
+import { register, requestRoleUpgrade } from "@/api/api";
 import { useAuth } from "@/context/AuthContext";
 import { ROLES } from "@repo/shared";
 import { useRouter } from "next/navigation";
@@ -25,13 +25,19 @@ const CompleteRegistration = () => {
         return;
       }
 
-      // Only pass requestedRole if user wants vet/admin (higher privilege)
-      const requestedRole =
-        selectedRole === ROLES.VET || selectedRole === ROLES.ADMIN
-          ? selectedRole
-          : undefined;
+      // Validate vet license info if vet role is selected
+      if (selectedRole === ROLES.VET && (!licenseNumber || !licenseCountry)) {
+        setError("License number and country are required for vet registration");
+        return;
+      }
 
-      await register(token, requestedRole);
+      // Register as pet owner first
+      await register(token);
+
+      // If requesting vet/admin role, make a separate role upgrade request
+      if (selectedRole === ROLES.VET || selectedRole === ROLES.ADMIN) {
+        await requestRoleUpgrade(token, selectedRole, licenseNumber, licenseCountry);
+      }
 
       // Refresh user data to get updated role state
       await refreshUserData();

@@ -1,23 +1,61 @@
-'use client';
+"use client";
+
+import { useState } from "react";
+import PetManagement from "./PetManagement";
+import VetSearch from "./VetSearch";
+
+type Tab = "pets" | "find-vet" | "appointments";
 
 export default function PetOwnerDashboard() {
+  const [activeTab, setActiveTab] = useState<Tab>("pets");
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">🐕 Pet Owner Dashboard</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div className="p-4 border rounded-lg">
-          <h3 className="font-semibold mb-2">My Pets</h3>
-          <p className="text-sm opacity-70">Manage your pets</p>
-        </div>
-        <div className="p-4 border rounded-lg">
-          <h3 className="font-semibold mb-2">Appointments</h3>
-          <p className="text-sm opacity-70">View upcoming appointments</p>
-        </div>
-        <div className="p-4 border rounded-lg">
-          <h3 className="font-semibold mb-2">Health Records</h3>
-          <p className="text-sm opacity-70">Access pet health records</p>
-        </div>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6">🐕 Pet Owner Dashboard</h2>
+
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-6 border-b border-border">
+        <button
+          onClick={() => setActiveTab("pets")}
+          className={`px-4 py-2 font-medium transition-colors ${
+            activeTab === "pets"
+              ? "border-b-2 border-foreground text-foreground"
+              : "text-foreground/60 hover:text-foreground"
+          }`}
+        >
+          🐾 My Pets
+        </button>
+        <button
+          onClick={() => setActiveTab("find-vet")}
+          className={`px-4 py-2 font-medium transition-colors ${
+            activeTab === "find-vet"
+              ? "border-b-2 border-foreground text-foreground"
+              : "text-foreground/60 hover:text-foreground"
+          }`}
+        >
+          🔍 Find a Vet
+        </button>
+        <button
+          onClick={() => setActiveTab("appointments")}
+          className={`px-4 py-2 font-medium transition-colors ${
+            activeTab === "appointments"
+              ? "border-b-2 border-foreground text-foreground"
+              : "text-foreground/60 hover:text-foreground"
+          }`}
+        >
+          📅 Appointments
+        </button>
       </div>
+
+      {/* Tab Content */}
+      {activeTab === "pets" && <PetManagement />}
+      {activeTab === "find-vet" && <VetSearch />}
+      {activeTab === "appointments" && (
+        <div className="text-center py-12 opacity-70">
+          <p className="text-lg mb-2">📅 Appointments</p>
+          <p className="text-sm">Coming soon...</p>
+        </div>
+      )}
     </div>
   );
 }

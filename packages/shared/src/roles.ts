@@ -1,5 +1,5 @@
 export type Role = "admin" | "pet-owner" | "vet";
-export type RoleStatus = "approved" | "pending" | "rejected";
+export type RoleStatus = "approved" | "pending" | "rejected"  // ← TypeScript checks this
 
 // Define role constants, to be used throughout the application. This helps avoid typos.
 export const ROLES = {
