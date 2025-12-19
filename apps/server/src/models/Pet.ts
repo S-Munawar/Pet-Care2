@@ -37,25 +37,12 @@ export interface IPet extends Document {
   species: PetSpecies;
   breed?: string;
   gender?: "male" | "female" | "unknown";
-
-  // Age information
   dateOfBirth?: Date;
-  approximateAge?: string; // e.g., "2 years", "6 months"
-
-  // Physical characteristics
-  weight?: number; // in kg
-  color?: string;
-
-  // Medical info
-  medicalNotes?: string;
-  allergies?: string[];
-  vaccinations?: string[];
 
   // Status
   status: PetStatus;
 
   // Metadata
-  profileImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -98,46 +85,11 @@ const PetSchema = new Schema<IPet>(
       type: Date,
     },
 
-    approximateAge: {
-      type: String,
-      maxlength: 50,
-    },
-
-    weight: {
-      type: Number,
-      min: 0,
-    },
-
-    color: {
-      type: String,
-      trim: true,
-      maxlength: 50,
-    },
-
-    medicalNotes: {
-      type: String,
-      maxlength: 2000,
-    },
-
-    allergies: {
-      type: [String],
-      default: [],
-    },
-
-    vaccinations: {
-      type: [String],
-      default: [],
-    },
-
     status: {
       type: String,
       enum: Object.values(PET_STATUSES),
       default: PET_STATUSES.ACTIVE,
       index: true,
-    },
-
-    profileImage: {
-      type: String,
     },
   },
   {

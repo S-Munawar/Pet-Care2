@@ -5,9 +5,14 @@ dotenv.config(); // Load environment variables BEFORE other imports
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/db";
+// // Import Firebase admin after dotenv config
+// import "./config/firebaseadmin";
 import userRouter from "./routes/user";
 import petRouter from "./routes/pet";
 import vetRouter from "./routes/vet";
+import healthRecordRouter from "./routes/healthRecord";
+import mlAnalysisRouter from "./routes/mlAnalysis";
+import aiChatRouter from "./routes/aiChat";
 
 const app = express();
 const PORT = process.env.PORT || 2000;
@@ -34,6 +39,9 @@ app.get("/health", (_req, res) => {
 app.use("/api", userRouter);
 app.use("/api", petRouter);
 app.use("/api", vetRouter);
+app.use("/api", healthRecordRouter);
+app.use("/api", mlAnalysisRouter);
+app.use("/api", aiChatRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!`);

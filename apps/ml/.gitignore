@@ -1,0 +1,42 @@
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML / data artifacts
+data/
+datasets/
+*.csv
+*.tsv
+*.parquet
+*.h5
+*.pkl
+*.joblib
+
+# Model outputs
+models/
+checkpoints/
+runs/
+logs/
+
+# Experiments
+wandb/
+mlruns/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Build
+build/
+dist/
+*.egg-info/

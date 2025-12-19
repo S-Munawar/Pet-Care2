@@ -305,12 +305,15 @@ export default function VetSearch() {
 
   // Filter vets when specialization changes
   useEffect(() => {
+    if (!searchSpecialization) {
+      setFilteredVets(allVets);
+    } else {
       setFilteredVets(
         allVets.filter((vet) =>
           vet.specializations?.includes(searchSpecialization)
         )
       );
- 
+    }
   }, [searchSpecialization, allVets]);
 
   const handleVetClick = async (vet: VetProfile) => {

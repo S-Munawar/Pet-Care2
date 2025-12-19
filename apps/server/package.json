@@ -6,7 +6,7 @@
   "homepage": "https://benjamin-chavez.com/blog/integrating-next.js-with-express.js-using-auth0-for-authentication",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "tsx watch --env-file=.env src/server.ts",
+    "dev": "tsx watch --require dotenv/config src/server.ts",
     "build": "esbuild src/server.ts --bundle --platform=node --outfile=dist/server.js --packages=external"
   },
   "keywords": [
@@ -34,6 +34,7 @@
     "pnpm": ">=8.8.0"
   },
   "dependencies": {
+    "axios": "^1.6.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "~1.4.6",
     "cors": "^2.8.5",

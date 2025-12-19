@@ -3,6 +3,7 @@
 import { useState } from "react";
 import VetProfileEditor from "./VetProfileEditor";
 import VetSearch from "./VetSearch";
+import VetPatients from "./VetPatients";
 
 type Tab = "profile" | "patients" | "colleagues" | "appointments";
 
@@ -59,12 +60,7 @@ export default function VetDashboard() {
 
       {/* Tab Content */}
       {activeTab === "profile" && <VetProfileEditor />}
-      {activeTab === "patients" && (
-        <div className="text-center py-12 opacity-70">
-          <p className="text-lg mb-2">🐾 Patient Management</p>
-          <p className="text-sm">Coming soon - view and search pet patients...</p>
-        </div>
-      )}
+      {activeTab === "patients" && <VetPatients />}
       {activeTab === "colleagues" && <VetSearch />}
       {activeTab === "appointments" && (
         <div className="text-center py-12 opacity-70">

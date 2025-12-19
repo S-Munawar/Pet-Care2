@@ -9,3 +9,4 @@ export { default as Footer } from "./Footer";
 export { default as PetManagement } from "./PetManagement";
 export { default as VetSearch } from "./VetSearch";
 export { default as VetProfileEditor } from "./VetProfileEditor";
+export { default as PetEducationAgent } from "./PetEducationAgent";

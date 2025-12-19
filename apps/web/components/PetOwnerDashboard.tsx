@@ -3,8 +3,9 @@
 import { useState } from "react";
 import PetManagement from "./PetManagement";
 import VetSearch from "./VetSearch";
+import PetEducationAgent from "./PetEducationAgent";
 
-type Tab = "pets" | "find-vet" | "appointments";
+type Tab = "pets" | "find-vet" | "ai-assistant" | "appointments";
 
 export default function PetOwnerDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>("pets");
@@ -36,6 +37,16 @@ export default function PetOwnerDashboard() {
           🔍 Find a Vet
         </button>
         <button
+          onClick={() => setActiveTab("ai-assistant")}
+          className={`px-4 py-2 font-medium transition-colors ${
+            activeTab === "ai-assistant"
+              ? "border-b-2 border-foreground text-foreground"
+              : "text-foreground/60 hover:text-foreground"
+          }`}
+        >
+          🤖 AI Assistant
+        </button>
+        <button
           onClick={() => setActiveTab("appointments")}
           className={`px-4 py-2 font-medium transition-colors ${
             activeTab === "appointments"
@@ -50,6 +61,7 @@ export default function PetOwnerDashboard() {
       {/* Tab Content */}
       {activeTab === "pets" && <PetManagement />}
       {activeTab === "find-vet" && <VetSearch />}
+      {activeTab === "ai-assistant" && <PetEducationAgent />}
       {activeTab === "appointments" && (
         <div className="text-center py-12 opacity-70">
           <p className="text-lg mb-2">📅 Appointments</p>

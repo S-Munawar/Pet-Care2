@@ -213,14 +213,7 @@ interface Pet {
   breed?: string;
   gender?: "male" | "female" | "unknown";
   dateOfBirth?: string;
-  approximateAge?: string;
-  weight?: number;
-  color?: string;
-  medicalNotes?: string;
-  allergies?: string[];
-  vaccinations?: string[];
   status: "active" | "archived";
-  profileImage?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -231,13 +224,6 @@ interface PetInput {
   breed?: string;
   gender?: "male" | "female" | "unknown";
   dateOfBirth?: string;
-  approximateAge?: string;
-  weight?: number;
-  color?: string;
-  medicalNotes?: string;
-  allergies?: string[];
-  vaccinations?: string[];
-  profileImage?: string;
 }
 
 interface PaginatedResponse<T> {
@@ -638,6 +624,151 @@ const verifyVet = async (
   return response.json();
 };
 
+// ============================================
+// ML ANALYSIS API
+// ============================================
+
+interface HealthAnalysisInput {
+  symptoms: string;
+  duration?: string;
+  severity?: string;
+  appetite?: string;
+  energy?: string;
+  temperature?: string;
+  weight?: string;
+  age?: string;
+  breed?: string;
+  additionalNotes?: string;
+}
+
+interface HealthAnalysisResponse {
+  message: string;
+  analysis: {
+    recordId: string;
+    riskCategory: string;
+    confidence: number;
+    flags: {
+      highRisk: boolean;
+      requiresAttention: boolean;
+    };
+    timestamp: string;
+  };
+  safetyNotice: string;
+}
+
+const performHealthAnalysis = async (
+  token: string,
+  petId: string,
+  analysisData: HealthAnalysisInput
+): Promise<HealthAnalysisResponse> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ml-analysis/pet/${petId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(analysisData),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Health analysis failed");
+  }
+
+  return response.json();
+};
+
+const getMLServiceStatus = async (token: string): Promise<any> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ml-analysis/status`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to get ML service status");
+  }
+
+  return response.json();
+};
+
+// ============================================
+// AI CHAT API
+// ============================================
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface AIChatResponse {
+  message: string;
+  petContext: { name: string; species: string } | null;
+}
+
+interface PetContextResponse {
+  pet: {
+    _id: string;
+    name: string;
+    species: string;
+    breed?: string;
+    gender?: string;
+    approximateAge?: string;
+    weight?: number;
+    allergies?: string[];
+    vaccinations?: string[];
+  };
+  healthRecordsCount: number;
+}
+
+const sendAIChatMessage = async (
+  token: string,
+  message: string,
+  petId?: string,
+  conversationHistory?: ChatMessage[]
+): Promise<AIChatResponse> => {
+  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ai/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ message, petId, conversationHistory }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to send message");
+  }
+
+  return response.json();
+};
+
+const getPetContextForAI = async (
+  token: string,
+  petId: string
+): Promise<PetContextResponse> => {
+  const response = await fetch(
+    `${NEXT_PUBLIC_API_URL}/api/ai/pet-context/${petId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Failed to get pet context");
+  }
+
+  return response.json();
+};
+
 export {
   getUser,
   register,
@@ -662,6 +793,12 @@ export {
   getSpecializations,
   getAllVetProfiles,
   verifyVet,
+  // ML Analysis exports
+  performHealthAnalysis,
+  getMLServiceStatus,
+  // AI Chat exports
+  sendAIChatMessage,
+  getPetContextForAI,
 };
 
 // Type exports
@@ -675,4 +812,9 @@ export type {
   Specialization,
   UserResponse,
   PendingRequest,
+  HealthAnalysisInput,
+  HealthAnalysisResponse,
+  ChatMessage,
+  AIChatResponse,
+  PetContextResponse,
 };

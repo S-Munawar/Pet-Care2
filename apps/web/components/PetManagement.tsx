@@ -11,6 +11,8 @@ import {
   type Pet,
   type PetInput,
 } from "@/api/api";
+import HealthAnalysis from "./HealthAnalysis";
+import HealthHistory from "./HealthHistory";
 
 const PET_SPECIES = [
   { value: "dog", label: "Dog" },
@@ -22,6 +24,40 @@ const PET_SPECIES = [
   { value: "reptile", label: "Reptile" },
   { value: "other", label: "Other" },
 ];
+
+const PET_BREEDS = {
+  dog: [
+    "Labrador Retriever", "Golden Retriever", "German Shepherd", "Bulldog", "Poodle",
+    "Beagle", "Rottweiler", "Yorkshire Terrier", "Dachshund", "Siberian Husky",
+    "Boxer", "Border Collie", "Chihuahua", "Shih Tzu", "Boston Terrier", "Mixed Breed"
+  ],
+  cat: [
+    "Persian", "Maine Coon", "British Shorthair", "Ragdoll", "Bengal",
+    "Abyssinian", "Birman", "Oriental Shorthair", "Manx", "Russian Blue",
+    "American Shorthair", "Scottish Fold", "Sphynx", "Siamese", "Mixed Breed"
+  ],
+  bird: [
+    "Budgerigar", "Cockatiel", "Canary", "Lovebird", "Conure", "Macaw",
+    "African Grey", "Cockatoo", "Finch", "Parakeet", "Other"
+  ],
+  fish: [
+    "Goldfish", "Betta", "Guppy", "Angelfish", "Tetra", "Molly",
+    "Platy", "Swordtail", "Barb", "Cichlid", "Other"
+  ],
+  rabbit: [
+    "Holland Lop", "Netherland Dwarf", "Mini Rex", "Lionhead", "Flemish Giant",
+    "English Angora", "Dutch", "Mini Lop", "Rex", "Mixed Breed"
+  ],
+  hamster: [
+    "Syrian", "Dwarf Campbell Russian", "Dwarf Winter White Russian",
+    "Roborovski", "Chinese", "European"
+  ],
+  reptile: [
+    "Bearded Dragon", "Leopard Gecko", "Ball Python", "Corn Snake",
+    "Blue-Tongued Skink", "Iguana", "Turtle", "Tortoise", "Other"
+  ],
+  other: ["Mixed", "Unknown", "Other"]
+};
 
 interface PetFormProps {
   pet?: Pet;
@@ -37,34 +73,11 @@ function PetForm({ pet, onSubmit, onCancel, isSubmitting }: PetFormProps) {
     breed: pet?.breed || "",
     gender: pet?.gender,
     dateOfBirth: pet?.dateOfBirth ? pet.dateOfBirth.split("T")[0] : "",
-    approximateAge: pet?.approximateAge || "",
-    weight: pet?.weight,
-    color: pet?.color || "",
-    medicalNotes: pet?.medicalNotes || "",
-    allergies: pet?.allergies || [],
-    vaccinations: pet?.vaccinations || [],
   });
-
-  const [allergiesInput, setAllergiesInput] = useState(
-    pet?.allergies?.join(", ") || ""
-  );
-  const [vaccinationsInput, setVaccinationsInput] = useState(
-    pet?.vaccinations?.join(", ") || ""
-  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit({
-      ...formData,
-      allergies: allergiesInput
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      vaccinations: vaccinationsInput
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-    });
+    await onSubmit(formData);
   };
 
   return (
@@ -101,14 +114,20 @@ function PetForm({ pet, onSubmit, onCancel, isSubmitting }: PetFormProps) {
 
         <div>
           <label className="block text-sm font-medium mb-1">Breed</label>
-          <input
-            type="text"
-            value={formData.breed}
+          <select
+            value={formData.breed || ""}
             onChange={(e) =>
               setFormData({ ...formData, breed: e.target.value })
             }
             className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-          />
+          >
+            <option value="">Select breed...</option>
+            {PET_BREEDS[formData.species as keyof typeof PET_BREEDS]?.map((breed) => (
+              <option key={breed} value={breed}>
+                {breed}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -130,7 +149,7 @@ function PetForm({ pet, onSubmit, onCancel, isSubmitting }: PetFormProps) {
           </select>
         </div>
 
-        <div>
+        <div className="md:col-span-2">
           <label className="block text-sm font-medium mb-1">Date of Birth</label>
           <input
             type="date"
@@ -141,88 +160,6 @@ function PetForm({ pet, onSubmit, onCancel, isSubmitting }: PetFormProps) {
             className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
           />
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Approximate Age
-          </label>
-          <input
-            type="text"
-            placeholder="e.g., 2 years"
-            value={formData.approximateAge}
-            onChange={(e) =>
-              setFormData({ ...formData, approximateAge: e.target.value })
-            }
-            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Weight (kg)</label>
-          <input
-            type="number"
-            step="0.1"
-            min="0"
-            value={formData.weight || ""}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                weight: e.target.value ? parseFloat(e.target.value) : undefined,
-              })
-            }
-            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-1">Color</label>
-          <input
-            type="text"
-            value={formData.color}
-            onChange={(e) =>
-              setFormData({ ...formData, color: e.target.value })
-            }
-            className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          Allergies (comma-separated)
-        </label>
-        <input
-          type="text"
-          placeholder="e.g., Chicken, Pollen"
-          value={allergiesInput}
-          onChange={(e) => setAllergiesInput(e.target.value)}
-          className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          Vaccinations (comma-separated)
-        </label>
-        <input
-          type="text"
-          placeholder="e.g., Rabies, Distemper"
-          value={vaccinationsInput}
-          onChange={(e) => setVaccinationsInput(e.target.value)}
-          className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium mb-1">Medical Notes</label>
-        <textarea
-          rows={3}
-          value={formData.medicalNotes}
-          onChange={(e) =>
-            setFormData({ ...formData, medicalNotes: e.target.value })
-          }
-          className="w-full px-3 py-2 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground resize-none"
-        />
       </div>
 
       <div className="flex gap-3 pt-2">
@@ -250,9 +187,11 @@ interface PetCardProps {
   onEdit: (pet: Pet) => void;
   onRemove: (pet: Pet) => void;
   onRestore?: (pet: Pet) => void;
+  onAnalyzeHealth?: (pet: Pet) => void;
+  onHealthHistory?: (pet: Pet) => void;
 }
 
-function PetCard({ pet, onEdit, onRemove, onRestore }: PetCardProps) {
+function PetCard({ pet, onEdit, onRemove, onRestore, onAnalyzeHealth, onHealthHistory }: PetCardProps) {
   const isArchived = pet.status === "archived";
 
   return (
@@ -281,34 +220,32 @@ function PetCard({ pet, onEdit, onRemove, onRestore }: PetCardProps) {
             <span className="capitalize">{pet.gender}</span>
           </p>
         )}
-        {pet.approximateAge && (
+        {pet.dateOfBirth && (
           <p>
-            <span className="opacity-70">Age:</span> {pet.approximateAge}
-          </p>
-        )}
-        {pet.weight && (
-          <p>
-            <span className="opacity-70">Weight:</span> {pet.weight} kg
-          </p>
-        )}
-        {pet.color && (
-          <p>
-            <span className="opacity-70">Color:</span> {pet.color}
+            <span className="opacity-70">Born:</span> {new Date(pet.dateOfBirth).toLocaleDateString()}
           </p>
         )}
       </div>
 
-      {pet.allergies && pet.allergies.length > 0 && (
-        <div className="mb-2">
-          <span className="text-xs opacity-70">Allergies: </span>
-          <span className="text-xs">{pet.allergies.join(", ")}</span>
-        </div>
-      )}
-
-      {pet.vaccinations && pet.vaccinations.length > 0 && (
-        <div className="mb-2">
-          <span className="text-xs opacity-70">Vaccinations: </span>
-          <span className="text-xs">{pet.vaccinations.join(", ")}</span>
+      {/* Health Action Buttons */}
+      {!isArchived && (onAnalyzeHealth || onHealthHistory) && (
+        <div className="flex gap-2 mb-3">
+          {onAnalyzeHealth && (
+            <button
+              onClick={() => onAnalyzeHealth(pet)}
+              className="flex-1 px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition-colors"
+            >
+              Analyze Health
+            </button>
+          )}
+          {onHealthHistory && (
+            <button
+              onClick={() => onHealthHistory(pet)}
+              className="flex-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors"
+            >
+              Health History
+            </button>
+          )}
         </div>
       )}
 
@@ -345,20 +282,25 @@ function PetCard({ pet, onEdit, onRemove, onRestore }: PetCardProps) {
 
 export default function PetManagement() {
   const { getToken } = useAuth();
-  const [pets, setPets] = useState<Pet[]>([]);
+  const [allPets, setAllPets] = useState<Pet[]>([]);
+  const [filteredPets, setFilteredPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingPet, setEditingPet] = useState<Pet | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const [selectedPetForAnalysis, setSelectedPetForAnalysis] = useState<Pet | null>(null);
+  const [selectedPetForHistory, setSelectedPetForHistory] = useState<Pet | null>(null);
 
   const fetchPets = async () => {
     try {
       const token = await getToken();
       if (!token) return;
       const data = await getMyPets(token, showArchived);
-      setPets(data.pets);
+      setAllPets(data.pets);
+      setFilteredPets(data.pets);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load pets");
     } finally {
@@ -370,6 +312,19 @@ export default function PetManagement() {
     fetchPets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showArchived]);
+
+  // Filter pets when search name changes
+  useEffect(() => {
+    if (!searchName.trim()) {
+      setFilteredPets(allPets);
+    } else {
+      setFilteredPets(
+        allPets.filter((pet) =>
+          pet.name.toLowerCase().includes(searchName.toLowerCase())
+        )
+      );
+    }
+  }, [searchName, allPets]);
 
   const handleAddPet = async (data: PetInput) => {
     setIsSubmitting(true);
@@ -425,6 +380,14 @@ export default function PetManagement() {
     }
   };
 
+  const handleAnalyzeHealth = (pet: Pet) => {
+    setSelectedPetForAnalysis(pet);
+  };
+
+  const handleHealthHistory = (pet: Pet) => {
+    setSelectedPetForHistory(pet);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -458,6 +421,27 @@ export default function PetManagement() {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="max-w-md">
+          <label className="block text-sm font-medium mb-2">
+            Search by Name
+          </label>
+          <input
+            type="text"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            placeholder="Enter pet name..."
+            className="w-full px-4 py-3 border border-border rounded-lg bg-transparent focus:outline-none focus:border-foreground text-base"
+          />
+        </div>
+        {searchName && (
+          <p className="text-sm opacity-70 mt-2">
+            Showing {filteredPets.length} pet{filteredPets.length !== 1 ? "s" : ""} matching "{searchName}"
+          </p>
+        )}
+      </div>
+
       {error && (
         <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
           {error}
@@ -487,23 +471,47 @@ export default function PetManagement() {
         </div>
       )}
 
-      {pets.length === 0 ? (
+      {filteredPets.length === 0 ? (
         <div className="text-center py-12 opacity-70">
-          <p className="text-lg mb-2">No pets yet</p>
-          <p className="text-sm">Add your first pet to get started!</p>
+          <p className="text-lg mb-2">
+            {searchName ? "No pets found" : "No pets yet"}
+          </p>
+          <p className="text-sm">
+            {searchName
+              ? "Try a different search term"
+              : "Add your first pet to get started!"}
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {pets.map((pet) => (
+          {filteredPets.map((pet) => (
             <PetCard
               key={pet._id}
               pet={pet}
               onEdit={(p) => setEditingPet(p)}
               onRemove={handleRemovePet}
               onRestore={showArchived ? handleRestorePet : undefined}
+              onAnalyzeHealth={handleAnalyzeHealth}
+              onHealthHistory={handleHealthHistory}
             />
           ))}
         </div>
+      )}
+
+      {/* Health Analysis Modal */}
+      {selectedPetForAnalysis && (
+        <HealthAnalysis
+          pet={selectedPetForAnalysis}
+          onClose={() => setSelectedPetForAnalysis(null)}
+        />
+      )}
+
+      {/* Health History Modal */}
+      {selectedPetForHistory && (
+        <HealthHistory
+          pet={selectedPetForHistory}
+          onClose={() => setSelectedPetForHistory(null)}
+        />
       )}
     </div>
   );
