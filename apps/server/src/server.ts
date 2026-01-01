@@ -23,7 +23,13 @@ connectDB();
 // Enable CORS for frontend
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: [
+      process.env.FRONTEND_LOCAL_URL || "http://localhost:3000",
+      process.env.FRONTEND_HOSTED_URL || "https://pet-care2-web.vercel.app"
+      // Add other allowed origins as needed
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"],
+
     credentials: true,
   })
 );

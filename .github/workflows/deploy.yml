@@ -53,7 +53,7 @@ jobs:
       - name: Build and Push Server Image
         uses: docker/build-push-action@v5
         with:
-          context: ./apps/server
+          context: .
           file: ./apps/server/Dockerfile
           push: true
           tags: ghcr.io/${{ env.REPO }}/server:latest

@@ -1,39 +1,29 @@
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- FIX STARTS HERE ---
-# 1. Copy the main Flask app
+# --- CRITICAL FIXES ---
+# 1. Copy the main app and the logic folders
 COPY app.py .
-
-# 2. Copy the inference module (preserve directory structure)
 COPY inference/ ./inference/
-
-# 3. Copy models
+COPY train/ ./train/
 COPY models/ ./models/
-# --- FIX ENDS HERE ---
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash inference
-RUN chown -R inference:inference /app
-USER inference
+# 2. Set Python path so it can find the 'inference' package
+ENV PYTHONPATH=/app
 
-# Expose port
+# Expose the Flask port
 EXPOSE 5000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/health || exit 1
-
-# Run the service
-CMD ["python", "inference_service.py"]
+# Run the Flask server (app.py), which handles the API
+CMD ["python", "app.py"]
