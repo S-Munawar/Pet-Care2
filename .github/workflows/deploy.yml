@@ -1,0 +1,98 @@
+name: CD (Build & Publish)
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1. Deploy WEB (Next.js)
+  # ------------------------------------------------------------------
+  # deploy-web:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: pnpm/action-setup@v3
+  #       with:
+  #         version: 9
+      
+  #     # Easiest way to deploy Next.js apps is using Vercel Action
+  #     # You need to link your project in Vercel first
+  #     - name: Deploy to Vercel
+  #       uses: amondnet/vercel-action@v25
+  #       with:
+  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+  #         working-directory: ./apps/web
+  #         vercel-args: '--prod'
+
+  # ------------------------------------------------------------------
+  # 2. Deploy SERVER (Node.js Container)
+  # ------------------------------------------------------------------
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Server Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/server
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/server:latest
+          # Pass build args if needed, or rely on .env at runtime
+
+  # ------------------------------------------------------------------
+  # 3. Deploy ML Service (Python + Training)
+  # ------------------------------------------------------------------
+  build-ml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install ML Dependencies
+        working-directory: ./apps/ml
+        run: pip install -r requirements.txt
+
+      # CRITICAL: We must train the model to generate the artifacts
+      # before building the Docker image.
+      - name: 🧠 Train Model
+        working-directory: ./apps/ml/train
+        run: |
+          python generate_pet_health_dataset.py
+          python train_pet_health_model.py
+          # Move artifacts so Docker build context can see them
+          mv models ../
+          
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push ML Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/ml
+          file: ./apps/ml/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/ml-service:latest
