@@ -3,9 +3,6 @@ import { AuthenticatedRequest } from "@/middleware/auth.middleware";
 import Pet from "@/models/Pet";
 import PetHealthRecord from "@/models/PetHealthRecord";
 
-// Use Ollama's chat endpoint for conversation format
-const API_URL = process.env.OLLAMA_URL || "http://localhost:11434/api/chat";
-
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -183,16 +180,30 @@ export const chatWithAgent = async (
     // Add current message
     messages.push({ role: "user", content: message });
 
-    // Call Ollama API
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: process.env.AI_MODEL || "phi3",
-        messages: messages,
-        stream: false,
-      }),
-    });
+    // Call API
+    const response = await fetch(
+      `${process.env.API_URL}/models/${process.env.AI_MODEL}:generateContent?key=${process.env.API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: "ping" }
+              ]
+            }
+          ],
+          generationConfig: {
+            maxOutputTokens: 256,
+            temperature: 0.3
+          }
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -201,7 +212,7 @@ export const chatWithAgent = async (
       return;
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     const assistantMessage = data.message?.content;
 
     if (!assistantMessage) {

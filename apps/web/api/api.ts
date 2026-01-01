@@ -216,6 +216,7 @@ interface Pet {
   status: "active" | "archived";
   createdAt: string;
   updatedAt: string;
+  profileImage?: string;
 }
 
 interface PetInput {

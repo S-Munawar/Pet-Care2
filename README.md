@@ -1,135 +1,231 @@
-# Turborepo starter
+# 🐾 Pet Care Platform
 
-This Turborepo starter is maintained by the Turborepo core team.
+A comprehensive pet health and management platform built as a **high-performance monorepo**.  
+It connects pet owners with veterinarians, tracks health records, and uses machine learning to assess pet health risks.
 
-## Using this example
+---
 
-Run the following command:
+## 🏗️ Architecture
 
-```sh
-npx create-turbo@latest
-```
+This project is structured as a **monorepo** using **Turborepo** and **pnpm workspaces**.
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 🧩 System Components
 
-### Apps and Packages
+| Service | Path | Tech Stack | Description |
+|-------|------|-----------|-------------|
+| Web Client | `apps/web` | Next.js 16, React, Tailwind | Frontend interface for users and vets |
+| API Server | `apps/server` | Node.js, Express, TypeScript | Main backend handling auth and data |
+| ML Service | `apps/ml` | Python, Flask, Scikit-learn | Machine learning inference engine |
+| Shared UI | `packages/ui` | React, Tailwind | Shared UI component library |
+| Shared Lib | `packages/shared` | TypeScript | Shared types, constants, utilities |
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 🔄 Data Flow
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+Frontend (Web Client)
+        ↓
+Firebase Authentication
+        ↓
+API Server (Validation & Persistence)
+        ↓
+MongoDB (Data Storage)
+        ↓
+ML Service (Health Risk Analysis)
+        ↓
+API Server (Save Results)
+        ↓
+Frontend (Display Results)
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+## 🚀 Getting Started
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### Prerequisites
 
-### Develop
+- **Node.js** v18+
+- **pnpm** (package manager)
+- **Python** 3.9+ (for ML service)
+- **Docker** (optional, for containers)
+- **MongoDB** (local or Atlas)
+- **Firebase Project** (authentication)
 
-To develop all apps and packages, run the following command:
+---
 
-```
-cd my-turborepo
+## 1. Installation
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+From the root directory, install all dependencies:
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm install
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## 2. Environment Setup
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+Configure environment variables for each application:
 
-### Remote Caching
+- **Web Client**
+  ```bash
+  cp apps/web/.env.example apps/web/.env.local
+  ```
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+- **API Server**
+  ```bash
+  cp apps/server/.env.example apps/server/.env
+  ```
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- **ML Service**
+  ```bash
+  cp apps/ml/.env.example apps/ml/.env
+  ```
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+Refer to the README inside each app directory for detailed variable definitions.
 
-```
-cd my-turborepo
+---
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
+## 3. Running the Development Environment
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
+Start all JavaScript/TypeScript services using Turborepo:
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+pnpm dev
 ```
 
-## Useful Links
+This starts:
 
-Learn more about the power of Turborepo:
+```
+apps/web     → http://localhost:3000
+apps/server  → http://localhost:2000
+```
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+---
+
+### Running the ML Service
+
+The ML service requires a Python environment and is typically run separately.
+
+```bash
+cd apps/ml
+python app.py
+```
+
+Or using Docker:
+
+```bash
+cd apps/ml
+docker compose up --build
+```
+
+---
+
+## 🛠️ Development Workflow
+
+### Build All Projects
+
+```bash
+pnpm build
+```
+
+Builds all apps and packages in dependency order.
+
+---
+
+### Linting
+
+```bash
+pnpm lint
+```
+
+Runs lint checks across the entire monorepo.
+
+---
+
+### Type Checking
+
+```bash
+pnpm check-types
+```
+
+Validates TypeScript types without emitting files.
+
+---
+
+## 📦 Shared Packages
+
+### `@repo/ui`
+
+Reusable React UI components:
+- Buttons
+- Cards
+- Inputs
+- Layout components
+
+Used directly by the Web Client.
+
+---
+
+### `@repo/shared`
+
+Shared TypeScript definitions:
+- `User`
+- `Pet`
+- `HealthRecord`
+
+Ensures **type safety** between frontend and backend.
+
+---
+
+### `@repo/eslint-config`
+
+Centralized ESLint rules shared across projects.
+
+---
+
+### `@repo/typescript-config`
+
+Base `tsconfig.json` configurations for consistent builds.
+
+---
+
+## 🐳 Docker Support
+
+Each application includes its own Docker configuration.
+
+Examples:
+
+### ML Service
+
+```bash
+cd apps/ml
+docker compose up --build
+```
+
+### API Server
+
+```bash
+cd apps/server
+docker build -t pet-care-server .
+```
+
+A root-level Docker Compose file can be added to orchestrate the full stack.
+
+---
+
+## 📚 Documentation
+
+Detailed documentation for individual components:
+
+- Web Client Documentation
+- API Server Documentation
+- ML Service Documentation
+- Authentication Implementation
+
+Refer to each app’s `README.md` for deeper technical details.
+
+---

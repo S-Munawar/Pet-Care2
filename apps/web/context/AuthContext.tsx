@@ -120,6 +120,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginWithGoogle = async () => {
+    // 👇 This creates the "Force Account Selection" behavior
+  googleProvider.setCustomParameters({
+    prompt: 'select_account'
+  });
     await signInWithPopup(auth, googleProvider);
   };
 

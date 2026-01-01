@@ -27,7 +27,7 @@ function PatientCard({ pet, onAnalyzeHealth, onHealthHistory }: PatientCardProps
         return `${years} year${years !== 1 ? 's' : ''}`;
       }
     }
-    return pet.approximateAge || "Age unknown";
+    return "Age unknown";
   };
 
   const getOwnerEmail = () => {

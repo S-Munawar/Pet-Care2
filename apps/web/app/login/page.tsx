@@ -14,10 +14,10 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!loading && user) {
-      if (isRegistered) {
+      if (!isRegistered) {
         router.push("/dashboard");
       } else {
-        router.push("/dashboard"); // Dashboard will show CompleteRegistration
+        router.push("/");
       }
     }
   }, [loading, user, isRegistered, router]);

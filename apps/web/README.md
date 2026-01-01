@@ -1,36 +1,170 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/create-next-app).
+# 🐾 Pet Care Web Client
 
-## Getting Started
+The frontend application for the Pet Care platform.  
+Built with **Next.js 16**, **TypeScript**, and **Tailwind CSS**, it provides the user interface for pet owners, veterinarians, and administrators to interact with the system.
 
-First, run the development server:
+---
+
+## ⚡ Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Authentication:** Firebase Auth
+- **State Management:** React Context (`AuthContext`)
+- **UI Components:** Shared workspace components (`@repo/ui`)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js:** v18 or higher  
+- **pnpm:** Package manager (recommended for monorepo/workspace support)  
+- **Firebase Project:** Authentication must be enabled  
+
+---
+
+## 1. Installation
+
+Navigate to the web application directory and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd apps/web
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 2. Environment Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load Inter, a custom Google Font.
+Create a `.env.local` file in the `apps/web` directory.  
+You can copy from `.env.example` or manually add the following variables.
 
-## Learn More
+### Required Firebase Configuration
 
-To learn more about Next.js, take a look at the following resources:
+These values can be found in the Firebase Console under  
+**Project Settings → General → Your Apps**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Backend Configuration
 
-## Deploy on Vercel
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:2000/api
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 3. Running the Development Server
+
+Start the application in development mode:
+
+```bash
+pnpm dev
+```
+
+The application will be available at:
+
+```
+http://localhost:3000
+```
+
+---
+
+## 📂 Project Structure
+
+```
+apps/web/
+├── app/                  # Next.js App Router pages
+│   ├── dashboard/        # Protected user dashboard
+│   ├── login/            # Authentication pages
+│   ├── register/         # Registration flow
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Landing page
+├── components/           # React components
+│   ├── ui/               # Shared UI elements
+│   └── ...               # Feature-specific components
+├── context/              # React Context providers (Auth, etc.)
+├── lib/                  # Utilities and configuration
+│   └── firebase.ts       # Firebase initialization
+└── public/               # Static assets
+```
+
+---
+
+## 🔑 Key Features
+
+### Authentication Flow
+
+- Seamless login and registration pages
+- Automatic redirection for authenticated users to the dashboard
+- **Complete Registration** flow syncing users with the backend
+
+### Dashboard
+
+- Centralized overview for users after login
+
+### Pet Management
+
+- Add and manage pet profiles
+- View pet-specific information
+
+### Health Tracking
+
+- Track medications, vaccinations, and vitals
+- View historical health records
+
+### Vet Finder
+
+- Search for veterinarians
+- Schedule and manage appointments
+
+### Role-Based Access
+
+- Tailored UI for:
+  - Pet Owners
+  - Veterinarians
+  - Administrators
+
+---
+
+## 🛠️ Available Scripts
+
+Run these commands from the `apps/web` directory:
+
+| Command | Description |
+|------|-------------|
+| `pnpm dev` | Starts the development server on port 3000 |
+| `pnpm build` | Builds the application for production |
+| `pnpm start` | Starts the production server |
+| `pnpm lint` | Runs ESLint for code quality |
+| `pnpm check-types` | Runs TypeScript type checking |
+
+---
+
+## 📦 Deployment
+
+This application is designed for **Vercel** or any platform supporting Next.js.
+
+Deployment steps:
+
+```
+Push code to a Git repository
+        ↓
+Import the project into Vercel
+        ↓
+Add environment variables
+        ↓
+Deploy
+```
+
+---

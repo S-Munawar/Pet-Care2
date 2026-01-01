@@ -25,7 +25,7 @@ function PetCard({ pet, onAnalyzeHealth, onHealthHistory }: PetCardProps) {
         return `${years} year${years !== 1 ? 's' : ''}`;
       }
     }
-    return pet.approximateAge || "Age unknown";
+    return "Age unknown";
   };
 
   return (
@@ -42,24 +42,7 @@ function PetCard({ pet, onAnalyzeHealth, onHealthHistory }: PetCardProps) {
             🐾
           </div>
         )}
-        
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg">{pet.name}</h3>
-          <p className="text-sm opacity-70 capitalize">
-            {pet.species} {pet.breed && `• ${pet.breed}`}
-          </p>
-          <p className="text-sm opacity-70">{formatAge()}</p>
-          {pet.weight && (
-            <p className="text-sm opacity-70">{pet.weight} kg</p>
-          )}
-        </div>
       </div>
-
-      {pet.medicalNotes && (
-        <div className="mt-3 p-2 bg-blue-50 rounded text-sm">
-          <strong>Medical Notes:</strong> {pet.medicalNotes}
-        </div>
-      )}
 
       <div className="flex gap-2 mt-4">
         <button
