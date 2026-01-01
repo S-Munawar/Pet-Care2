@@ -12,9 +12,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY inference_service.py .
+# --- FIX STARTS HERE ---
+# 1. Copy the main Flask app
+COPY app.py .
+
+# 2. Copy the inference module (preserve directory structure)
+COPY inference/ ./inference/
+
+# 3. Copy models
 COPY models/ ./models/
+# --- FIX ENDS HERE ---
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash inference
