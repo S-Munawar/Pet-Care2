@@ -83,7 +83,10 @@ jobs:
         run: |
           python generate_pet_health_dataset.py
           python train_pet_health_model.py
-          # Move artifacts so Docker build context can see them
+          # Safety: Ensure the destination is clear before moving
+          rm -rf ../models
+          
+          # Move fresh models to the build context
           mv models ../
           
       - name: Log in to GitHub Container Registry

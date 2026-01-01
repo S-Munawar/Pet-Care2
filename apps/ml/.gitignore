@@ -22,6 +22,7 @@ datasets/
 *.joblib
 
 # Model outputs
+models/
 checkpoints/
 runs/
 logs/
