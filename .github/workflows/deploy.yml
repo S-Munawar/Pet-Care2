@@ -78,30 +78,28 @@ jobs:
 
       # CRITICAL: We must train the model to generate the artifacts
       # before building the Docker image.
-      # ... previous steps (Setup Python, Install Dependencies) ...
       - name: 🧠 Train Model
         working-directory: ./apps/ml/train
         run: |
           python generate_pet_health_dataset.py
           python train_pet_health_model.py
-          echo "Listing files in train directory:"
-          ls -la
+          # Move artifacts so Docker build context can see them
+          mv models ../
           
-          # Move artifacts to apps/ml root so Docker can see them
-          # Ensure we are moving it to the right place
-          mv models ../ || echo "Models folder not found in train dir!"
-          
-      - name: 🔍 Debug File Structure
-        run: |
-          echo "Checking apps/ml content:"
-          ls -R apps/ml
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      # ... Log in to GitHub Container Registry ...
+      - name: Downcase REPO
+        run: |
+          echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
 
       - name: Build and Push ML Image
         uses: docker/build-push-action@v5
         with:
-          # KEEP THIS as ./apps/ml (Do not use '.' here like we did for Server)
           context: ./apps/ml
           file: ./apps/ml/Dockerfile
           push: true
