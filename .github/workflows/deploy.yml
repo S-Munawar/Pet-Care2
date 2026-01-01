@@ -88,6 +88,14 @@ jobs:
           
           # Move fresh models to the build context
           mv models ../
+
+      # ... after the "Train Model" step ...
+      - name: 🔍 Verify Models Location
+        run: |
+          echo "Listing contents of apps/ml:"
+          ls -la apps/ml/
+          echo "Checking for models folder:"
+          ls -la apps/ml/models/ || echo "MODELS FOLDER MISSING!"
           
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
