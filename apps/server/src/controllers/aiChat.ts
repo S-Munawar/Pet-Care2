@@ -180,30 +180,42 @@ export const chatWithAgent = async (
     // Add current message
     messages.push({ role: "user", content: message });
 
-    // Call API
-    const response = await fetch(
-      `${process.env.API_URL}/models/${process.env.AI_MODEL}:generateContent?key=${process.env.API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              role: "user",
-              parts: [
-                { text: "ping" }
-              ]
-            }
-          ],
-          generationConfig: {
-            maxOutputTokens: 256,
-            temperature: 0.3
-          }
-        }),
-      }
-    );
+    // // Call Gemini API
+    // const response = await fetch(
+    //   `${process.env.API_URL}/models/${process.env.AI_MODEL}:generateContent?key=${process.env.API_KEY}`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       contents: [
+    //         {
+    //           role: "user",
+    //           parts: [
+    //             { text: "ping" }
+    //           ]
+    //         }
+    //       ],
+    //       generationConfig: {
+    //         maxOutputTokens: 256,
+    //         temperature: 0.3
+    //       }
+    //     }),
+    //   }
+    // );
+
+    // Call Ollama API
+    const response = await fetch(`${process.env.API_URL}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: process.env.AI_MODEL,
+        messages: messages,
+        stream: false,
+      }),
+    });
+
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
