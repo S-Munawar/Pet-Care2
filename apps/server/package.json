@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "tsx watch --require dotenv/config src/server.ts",
-    "build": "esbuild src/server.ts --bundle --platform=node --outfile=dist/server.js --format=cjs --external:express --external:mongoose --external:cors --external:firebase-admin"
-  },
+    "build": "esbuild src/server.ts --bundle --platform=node --outfile=dist/server.js --format=cjs --external:express --external:mongoose --external:cors --external:firebase-admin",
+    "clean": "rm -rf dist node_modules .turbo"
+    },
   "keywords": [
     "example",
     "express",

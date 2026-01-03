@@ -20,10 +20,14 @@ const PORT = process.env.PORT || 2000;
 // Connect to MongoDB
 connectDB();
 
+const FRONTEND_URL = process.env.NODE_ENV === "production"
+  ? process.env.PROD_FRONTEND_URL
+  : process.env.DEV_FRONTEND_URL;
+
 // Enable CORS for frontend
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: FRONTEND_URL,
     credentials: true,
   })
 );
@@ -42,6 +46,10 @@ app.use("/api", vetRouter);
 app.use("/api", healthRecordRouter);
 app.use("/api", mlAnalysisRouter);
 app.use("/api", aiChatRouter);
+
+app.get("/", (_req, res) => {
+  res.send(`Welcome to the Pet Care API! ${FRONTEND_URL}`);
+});
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}!`);

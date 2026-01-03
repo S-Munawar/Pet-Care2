@@ -1,5 +1,11 @@
-const NEXT_PUBLIC_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:2000";
+import dotenv from "dotenv";
+dotenv.config(); // Load environment variables BEFORE other imports
+
+const NEXT_PUBLIC_API_URL = process.env.NEXT_ENV === "production"
+  ? process.env.NEXT_PUBLIC_API_PROD_URL!
+  : process.env.NEXT_PUBLIC_API_DEV_URL!;
+
+// const NEXT_PUBLIC_API_URL = 'http://localhost:2000';
 
 // ============================================
 // USER API

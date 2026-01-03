@@ -3,6 +3,9 @@ import { AuthenticatedRequest } from "@/middleware/auth.middleware";
 import Pet from "@/models/Pet";
 import PetHealthRecord from "@/models/PetHealthRecord";
 
+const API_URL = process.env.API_URL || "http://localhost:11434";
+const AI_MODEL = process.env.AI_MODEL;
+
 interface ChatMessage {
   role: "system" | "user" | "assistant";
   content: string;
@@ -206,11 +209,11 @@ export const chatWithAgent = async (
     // );
 
     // Call Ollama API
-    const response = await fetch(`${process.env.API_URL}`, {
+    const response = await fetch(`${API_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: process.env.AI_MODEL,
+        model: AI_MODEL,
         messages: messages,
         stream: false,
       }),
