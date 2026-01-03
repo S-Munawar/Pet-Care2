@@ -1,6 +1,4 @@
-const NEXT_PUBLIC_API_URL = process.env.NEXT_ENV === "production"
-  ? process.env.NEXT_PUBLIC_API_PROD_URL!
-  : process.env.NEXT_PUBLIC_API_DEV_URL!;
+const NEXT_PUBLIC_API_URL = "https://pet-care-api-nzyy.onrender.com";
 
 // ============================================
 // USER API
