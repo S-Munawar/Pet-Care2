@@ -115,3 +115,12 @@ jobs:
           file: ./apps/ml/Dockerfile
           push: true
           tags: ghcr.io/${{ env.REPO }}/ml-service:latest
+
+      - name: 🚀 Deploy API Server
+        # This curl command hits the secret URL, telling Render to start building
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_SERVER }}"
+      
+      - name: 🚀 Deploy ML Service
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ML }}"
