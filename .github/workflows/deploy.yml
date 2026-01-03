@@ -56,7 +56,7 @@ jobs:
           context: .
           file: ./apps/server/Dockerfile
           push: true
-          tags: ghcr.io/${{ env.REPO }}/server:latest
+          tags: ghcr.io/${{ env.REPO }}/petcare2-server:latest
           # Pass build args if needed, or rely on .env at runtime
 
   # ------------------------------------------------------------------
@@ -114,7 +114,7 @@ jobs:
           context: ./apps/ml
           file: ./apps/ml/Dockerfile
           push: true
-          tags: ghcr.io/${{ env.REPO }}/ml-service:latest
+          tags: ghcr.io/${{ env.REPO }}/petcare2-ml-inference-:latest
 
       - name: 🚀 Deploy API Server
         # This curl command hits the secret URL, telling Render to start building
