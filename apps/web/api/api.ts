@@ -1,4 +1,8 @@
-const NEXT_PUBLIC_API_URL = "https://pet-care-api-nzyy.onrender.com";
+const API_URL =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_API_PROD_URL
+    : process.env.NEXT_PUBLIC_API_DEV_URL;
+
 
 // ============================================
 // USER API
@@ -16,7 +20,7 @@ interface UserResponse {
 }
 
 const getUser = async (token: string): Promise<UserResponse> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/user`, {
+  const response = await fetch(`${API_URL}/api/user`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -58,8 +62,8 @@ const register = async (
   token: string,
   requestedRole?: string
 ): Promise<RegisterResponse> => {
-  console.log(`${NEXT_PUBLIC_API_URL}/api/auth/register`);
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/auth/register`, {
+  console.log(`${API_URL}/api/auth/register`);
+  const response = await fetch(`${API_URL}/api/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +91,7 @@ const requestRoleUpgrade = async (
   licenseNumber?: string,
   licenseCountry?: string
 ): Promise<RoleRequestResponse> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/auth/request-role`, {
+  const response = await fetch(`${API_URL}/api/auth/request-role`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -125,7 +129,7 @@ const getPendingRoleRequests = async (
   token: string
 ): Promise<{ requests: PendingRequest[] }> => {
   const response = await fetch(
-    `${NEXT_PUBLIC_API_URL}/api/admin/pending-requests`,
+    `${API_URL}/api/admin/pending-requests`,
     {
       method: "GET",
       headers: {
@@ -146,7 +150,7 @@ const approveRoleRequest = async (
   token: string,
   requestId: string
 ): Promise<{ message: string }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/admin/approve-role`, {
+  const response = await fetch(`${API_URL}/api/admin/approve-role`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -168,7 +172,7 @@ const rejectRoleRequest = async (
   requestId: string,
   reason?: string
 ): Promise<{ message: string }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/admin/reject-role`, {
+  const response = await fetch(`${API_URL}/api/admin/reject-role`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -186,7 +190,7 @@ const rejectRoleRequest = async (
 };
 
 const getAllUsers = async (token: string): Promise<{ users: unknown[] }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/admin/users`, {
+  const response = await fetch(`${API_URL}/api/admin/users`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -241,7 +245,7 @@ const getMyPets = async (
   token: string,
   includeArchived = false
 ): Promise<{ pets: Pet[] }> => {
-  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/pets`);
+  const url = new URL(`${API_URL}/api/pets`);
   if (includeArchived) url.searchParams.set("includeArchived", "true");
 
   const response = await fetch(url.toString(), {
@@ -260,7 +264,7 @@ const getMyPets = async (
 };
 
 const getPetById = async (token: string, petId: string): Promise<{ pet: Pet }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+  const response = await fetch(`${API_URL}/api/pets/${petId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -279,7 +283,7 @@ const addPet = async (
   token: string,
   pet: PetInput
 ): Promise<{ message: string; pet: Pet }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets`, {
+  const response = await fetch(`${API_URL}/api/pets`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -301,7 +305,7 @@ const updatePet = async (
   petId: string,
   updates: Partial<PetInput>
 ): Promise<{ message: string; pet: Pet }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+  const response = await fetch(`${API_URL}/api/pets/${petId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -322,7 +326,7 @@ const removePet = async (
   token: string,
   petId: string
 ): Promise<{ message: string; pet: Pet }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/pets/${petId}`, {
+  const response = await fetch(`${API_URL}/api/pets/${petId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -343,7 +347,7 @@ const restorePet = async (
   petId: string
 ): Promise<{ message: string; pet: Pet }> => {
   const response = await fetch(
-    `${NEXT_PUBLIC_API_URL}/api/pets/${petId}/restore`,
+    `${API_URL}/api/pets/${petId}/restore`,
     {
       method: "POST",
       headers: {
@@ -375,7 +379,7 @@ const searchPets = async (
   token: string,
   params: SearchPetsParams = {}
 ): Promise<{ pets: Pet[]; pagination: PaginatedResponse<Pet>["pagination"] }> => {
-  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/pets/search`);
+  const url = new URL(`${API_URL}/api/pets/search`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) url.searchParams.set(key, String(value));
   });
@@ -454,7 +458,7 @@ interface VetProfileInput {
 const getMyVetProfile = async (
   token: string
 ): Promise<{ profile: VetProfile }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vet/profile`, {
+  const response = await fetch(`${API_URL}/api/vet/profile`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -473,7 +477,7 @@ const updateVetProfile = async (
   token: string,
   updates: VetProfileInput
 ): Promise<{ message: string; profile: VetProfile }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vet/profile`, {
+  const response = await fetch(`${API_URL}/api/vet/profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -494,7 +498,7 @@ const getVetPublicProfile = async (
   token: string,
   vetId: string
 ): Promise<{ profile: VetProfile }> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/vets/${vetId}`, {
+  const response = await fetch(`${API_URL}/api/vets/${vetId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -525,7 +529,7 @@ const searchVets = async (
   token: string,
   params: SearchVetsParams = {}
 ): Promise<{ vets: VetProfile[]; pagination: PaginatedResponse<VetProfile>["pagination"] }> => {
-  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/vets/search`);
+  const url = new URL(`${API_URL}/api/vets/search`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) {
       if (Array.isArray(value)) {
@@ -559,7 +563,7 @@ interface Specialization {
 
 const getSpecializations = async (): Promise<{ specializations: Specialization[] }> => {
   const response = await fetch(
-    `${NEXT_PUBLIC_API_URL}/api/vets/specializations`,
+    `${API_URL}/api/vets/specializations`,
     {
       method: "GET",
       headers: {
@@ -580,7 +584,7 @@ const getAllVetProfiles = async (
   token: string,
   params: { status?: string; verified?: boolean; page?: number; limit?: number } = {}
 ): Promise<{ vets: VetProfile[]; pagination: PaginatedResponse<VetProfile>["pagination"] }> => {
-  const url = new URL(`${NEXT_PUBLIC_API_URL}/api/admin/vets`);
+  const url = new URL(`${API_URL}/api/admin/vets`);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined) url.searchParams.set(key, String(value));
   });
@@ -606,7 +610,7 @@ const verifyVet = async (
   verificationSource?: string
 ): Promise<{ message: string; profile: VetProfile }> => {
   const response = await fetch(
-    `${NEXT_PUBLIC_API_URL}/api/admin/vets/${vetId}/verify`,
+    `${API_URL}/api/admin/vets/${vetId}/verify`,
     {
       method: "POST",
       headers: {
@@ -662,7 +666,7 @@ const performHealthAnalysis = async (
   petId: string,
   analysisData: HealthAnalysisInput
 ): Promise<HealthAnalysisResponse> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ml-analysis/pet/${petId}`, {
+  const response = await fetch(`${API_URL}/api/ml-analysis/pet/${petId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -680,7 +684,7 @@ const performHealthAnalysis = async (
 };
 
 const getMLServiceStatus = async (token: string): Promise<any> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ml-analysis/status`, {
+  const response = await fetch(`${API_URL}/api/ml-analysis/status`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -730,7 +734,7 @@ const sendAIChatMessage = async (
   petId?: string,
   conversationHistory?: ChatMessage[]
 ): Promise<AIChatResponse> => {
-  const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/ai/chat`, {
+  const response = await fetch(`${API_URL}/api/ai/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -752,7 +756,7 @@ const getPetContextForAI = async (
   petId: string
 ): Promise<PetContextResponse> => {
   const response = await fetch(
-    `${NEXT_PUBLIC_API_URL}/api/ai/pet-context/${petId}`,
+    `${API_URL}/api/ai/pet-context/${petId}`,
     {
       method: "GET",
       headers: {
