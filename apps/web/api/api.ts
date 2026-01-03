@@ -58,6 +58,7 @@ const register = async (
   token: string,
   requestedRole?: string
 ): Promise<RegisterResponse> => {
+  console.log(`${NEXT_PUBLIC_API_URL}/api/auth/register`);
   const response = await fetch(`${NEXT_PUBLIC_API_URL}/api/auth/register`, {
     method: "POST",
     headers: {
