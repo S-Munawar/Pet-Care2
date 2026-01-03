@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 2000;
 // Connect to MongoDB
 connectDB();
 
-const ML_INFERENCE_URL = process.env.NODE_ENV === "production"
+const ML_INFERENCE_URL = process.env.ML_INFERENCE_URL
 const FRONTEND_URL = process.env.NODE_ENV === "production"
   ? process.env.PROD_FRONTEND_URL
   : process.env.DEV_FRONTEND_URL;
@@ -49,8 +49,7 @@ app.use("/api", mlAnalysisRouter);
 app.use("/api", aiChatRouter);
 
 app.get("/", (_req, res) => {
-  res.send(`Web: ${FRONTEND_URL}`);
-  res.send(`ML Inference: ${ML_INFERENCE_URL}`);
+  res.send(`Web: ${FRONTEND_URL} |  ML Inference: ${ML_INFERENCE_URL}`);
 });
 
 app.listen(PORT, () => {
