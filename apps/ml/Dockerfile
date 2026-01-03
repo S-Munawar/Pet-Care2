@@ -2,28 +2,33 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies
+# 1. Install System Deps
 RUN apt-get update && apt-get install -y \
     gcc \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
+# 2. Install Python Deps
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# --- CRITICAL FIXES ---
-# 1. Copy the main app and the logic folders
+# 3. Copy Source Code
 COPY app.py .
 COPY inference/ ./inference/
 COPY train/ ./train/
-COPY models/ ./models/
 
-# 2. Set Python path so it can find the 'inference' package
+# --- THE FIX: Train the Model during the Build ---
+# Instead of copying existing models, we generate them right here.
+WORKDIR /app/train
+RUN python generate_pet_health_dataset.py
+RUN python train_pet_health_model.py
+
+# Move the newly created models to the correct folder
+RUN mkdir -p /app/models && mv models/* /app/models/
+
+# 4. Final Setup
+WORKDIR /app
 ENV PYTHONPATH=/app
-
-# Expose the Flask port
 EXPOSE 5000
 
-# Run the Flask server (app.py), which handles the API
 CMD ["python", "app.py"]
