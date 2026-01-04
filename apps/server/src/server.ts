@@ -21,6 +21,8 @@ const PORT = process.env.PORT || 2000;
 connectDB();
 
 const ML_INFERENCE_URL = process.env.ML_INFERENCE_URL
+const API_URL = process.env.API_URL;
+const AI_MODEL = process.env.AI_MODEL;
 const FRONTEND_URL = process.env.NODE_ENV === "production"
   ? process.env.PROD_FRONTEND_URL
   : process.env.DEV_FRONTEND_URL;
@@ -49,7 +51,7 @@ app.use("/api", mlAnalysisRouter);
 app.use("/api", aiChatRouter);
 
 app.get("/", (_req, res) => {
-  res.send(`Web: ${FRONTEND_URL} |  ML Inference: ${ML_INFERENCE_URL}`);
+  res.send(`Web: ${FRONTEND_URL} |  ML Inference: ${ML_INFERENCE_URL} | AI API: ${API_URL} | AI Model: ${AI_MODEL}`);
 });
 
 app.listen(PORT, () => {
